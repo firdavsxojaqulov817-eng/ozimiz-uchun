@@ -14,7 +14,7 @@
             margin: 0;
             padding-bottom: 75px;
             color: #333;
-            /* Fon rasmini o'rnatish uchun sozlamalar */
+            /* Fon rasmini to'liq o'rnatish uchun sozlamalar */
             background-image: url('Fon.jpg');
             background-size: cover;
             background-position: center;
@@ -30,7 +30,7 @@
             display: block !important;
         }
         
-        /* 0. XUSH KELIBSIZ OYNASI */
+        /* 0. XUSH KELIBSIZ OYNASI - KIRISH QISMI */
         #page-welcome {
             display: flex;
             flex-direction: column;
@@ -38,7 +38,11 @@
             justify-content: flex-end;
             height: 100vh;
             text-align: center;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3)), #0088cc;
+            /* Kirish qismiga ham Fon.jpg rasmi va ustidan qoraytirilgan gradient berildi */
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3)), url('Fon.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: white;
             padding: 30px 20px;
             box-sizing: border-box;
