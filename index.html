@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oʻzimiz uchun - Market</title>
+    
+    <!-- TELEGRAM WEB APP SKRIPTI -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 75px;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .page {
+            display: none;
+            padding: 15px;
+        }
+        .active-page {
+            display: block !important;
+        }
+        
+        /* 0. XUSH KELIBSIZ OYNASI */
+        #page-welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100vh;
+            text-align: center;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3)), #0088cc;
+            color: white;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000;
+        }
+        #page-welcome h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        #page-welcome p {
+            font-size: 14px;
+            margin-bottom: 25px;
+            max-width: 350px;
+            line-height: 1.4;
+        }
+        .welcome-btn {
+            background-color: #ffffff;
+            color: #0088cc;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+        }
+
+        /* UMUMIY STILLAR */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            color: #0088cc;
+            margin: 5px 0;
+        }
+        .header p {
+            color: #444;
+            font-size: 14px;
+            margin: 0;
+            font-weight: 500;
+        }
+        .card {
+            background: #ffffff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .card button {
+            background-color: #0088cc;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* E'LON VA TAKSI KARTALAR */
+        .product-item, .taxi-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .product-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .product-img {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #eee;
+        }
+        .product-title, .taxi-route {
+            font-weight: bold;
+            font-size: 15px;
+            margin: 0 0 5px 0;
+        }
+        .product-price, .taxi-phone {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0;
+        }
+        .call-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 15px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* PASTKI MENYU */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid #ddd;
+            display: none;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        .tab-item {
+            text-align: center;
+            font-size: 11px;
+            color: #777;
+            cursor: pointer;
+            flex-grow: 1;
+            background: none;
+            border: none;
+            margin: 0;
+            padding: 3px;
+        }
+        .tab-item.active {
+            color: #0088cc;
+            font-weight: bold;
+        }
+        .tab-icon {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .profile-box {
+            text-align: center;
+            padding: 20px;
+        }
+        .support-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #e3f2fd;
+            color: #0088cc;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 0. XUSH KELIBSIZ OYNASI -->
+    <div id="page-welcome" class="page active-page">
+        <h1>Oʻzimiz uchun</h1>
+        <p>Qishlogʻimiz ichki savdo va taksi platformasiga xush kelibsiz!</p>
+        <button class="welcome-btn" onclick="startApp()">Davom etish</button>
+    </div>
+
+    <!-- 1. ASOSIY SAHIFA -->
+    <div id="page-home" class="page">
+        <div class="header">
+            <h2>Oʻzimiz uchun</h2>
+            <p>Sotuvdagi barcha mahsulotlar</p>
+        </div>
+
+        <div id="feed">
+            <div class="product-item">
+                <img src="https://via.placeholder.com/75" class="product-img" alt="Rasm">
+                <div class="product-info">
+                    <p class="product-title">Qishloq tuxumi (1 ta quti)</p>
+                    <p class="product-price">35 000 so'm</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TAKSI BOʻLIMI -->
+    <div id="page-taxi" class="page">
+        <div class="header">
+            <h2>🚖 Qishloq Taksilari</h2>
+            <p>Tezkor yoʻnalishlar va aloqa</p>
+        </div>
+
+        <div class="card">
+            <label>Yoʻnalish (Qayerdan - Qayerga):</label>
+            <input type="text" id="taxi-route" placeholder="Masalan: Qishloq - Markaz">
+
+            <label>Telefon raqam:</label>
+            <input type="tel" id="taxi-phone" placeholder="Masalan: +998 90 123 45 67">
+
+            <button onclick="taxiJoyla()">Taksi E'lonini Qoʻshish</button>
+        </div>
+
+        <h3>Mavjud Yoʻnalishlar</h3>
+        <div id="taxi-feed">
+            <div class="taxi-item">
+                <p class="taxi-route">📍 Qishloq ➔ Tuman Markazi</p>
+                <p class="taxi-phone">📞 Tel: +998 91 234 56 78</p>
+                <a href="tel:+998912345678" class="call-btn">📲 Qoʻngʻiroq qilish</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. E'LON QO'SHISH SAHIFASI -->
+    <div id="page-add" class="page">
+        <div class="header">
+            <h2>Yangi E'lon Qo'shish</h2>
+            <p>Mahsulotingizni elga taklif qiling</p>
+        </div>
+
+        <div class="card">
+            <label>Tovar nomi:</label>
+            <input type="text" id="title" placeholder="Masalan: Qora mol / Sabzavot">
+
+            <label>Narxi:</label>
+            <input type="text" id="price" placeholder="Masalan: 500 000 so'm">
+
+            <label>Rasm yuklash:</label>
+            <input type="file" id="image" accept="image/*">
+
+            <button onclick="elonJoyla()">E'lonni Joylash</button>
+        </div>
+    </div>
+
+    <!-- 4. PROFIL SAHIFASI -->
+    <div id="page-profile" class="page">
+        <div class="header">
+            <h2>Mening Profilim</h2>
+            <p>Sizning shaxsiy ma'lumotlaringiz</p>
+        </div>
+
+        <div class="card profile-box">
+            <p>👤 <b>Foydalanuvchi:</b> Mehmon</p>
+            <p>📱 <b>Holat:</b> Faol foydalanuvchi</p>
+            
+            <hr style="border:0; border-top:1px solid #eee; margin: 15px 0;">
+            
+            <p style="margin-bottom: 5px; font-size: 13px; color: #555;">Har qanday takliflar men uchun qadrli:</p>
+            <a href="https://t.me/xojaqulov_17" target="_blank" class="support-link">@xojaqulov_17</a>
+        </div>
+    </div>
+
+    <!-- PASTKI MENYU -->
+    <div class="tab-bar" id="bottom-menu">
+        <button class="tab-item active" onclick="switchPage('home', this)">
+            <span class="tab-icon">🏠</span>Asosiy
+        </button>
+        <button class="tab-item" onclick="switchPage('taxi', this)">
+            <span class="tab-icon">🚖</span>Taksi
+        </button>
+        <button class="tab-item" onclick="switchPage('add', this)">
+            <span class="tab-icon">➕</span>E'lon berish
+        </button>
+        <button class="tab-item" onclick="switchPage('profile', this)">
+            <span class="tab-icon">👤</span>Profil
+        </button>
+    </div>
+
+    <script>
+        // TELEGRAM WEBAPP SOZLAMALARI
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+
+        // DAVOM ETISH TUGMASI BOSILGANDA
+        function startApp() {
+            let welcomePage = document.getElementById('page-welcome');
+            welcomePage.classList.remove('active-page');
+            welcomePage.style.setProperty('display', 'none', 'important');
+            
+            document.getElementById('page-home').classList.add('active-page');
+            document.getElementById('bottom-menu').style.display = 'flex';
+        }
+
+        // SAHIFALAR ORASIDA O'TISH
+        function switchPage(pageName, element) {
+            let pages = document.querySelectorAll('.page');
+            pages.forEach(p => {
+                if(p.id !== 'page-welcome') {
+                    p.classList.remove('active-page');
+                    p.style.display = 'none';
+                }
+            });
+
+            let activeTarget = document.getElementById('page-' + pageName);
+            activeTarget.classList.add('active-page');
+            activeTarget.style.display = 'block';
+
+            let items = document.querySelectorAll('.tab-item');
+            items.forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // MAHSULOT E'LONI QO'SHISH
+        function elonJoyla() {
+            let title = document.getElementById('title').value;
+            let price = document.getElementById('price').value;
+            let imageInput = document.getElementById('image');
+
+            if(title === "" || price === "") {
+                alert("Iltimos, maydonlarni to'ldiring!");
+                return;
+            }
+
+            let imgSrc = "https://via.placeholder.com/75";
+            if (imageInput.files && imageInput.files[0]) {
+                imgSrc = URL.createObjectURL(imageInput.files[0]);
+            }
+
+            let newProduct = `
+                <div class="product-item">
+                    <img src="${imgSrc}" class="product-img">
+                    <div class="product-info">
+                        <p class="product-title">${title}</p>
+                        <p class="product-price">${price}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('feed').insertAdjacentHTML('afterbegin', newProduct);
+
+            document.getElementById('title').value = "";
+            document.getElementById('price').value = "";
+            document.getElementById('image').value = "";
+
+            alert("E'lon muvaffaqiyatli qo'shildi!");
+            switchPage('home', document.querySelectorAll('.tab-item')[0]);
+        }
+
+        // TAKSI E'LONI QO'SHISH
+        function taxiJoyla() {
+            let route = document.getElementById('taxi-route').value;
+            let phone = document.getElementById('taxi-phone').value;
+
+            if(route === "" || phone === "") {
+                alert("Iltimos, yoʻnalish va telefon raqamni kiriting!");
+                return;
+            }
+
+            let newTaxi = `
+                <div class="taxi-item">
+                    <p class="taxi-route">📍 ${route}</p>
+                    <p class="taxi-phone">📞 Tel: ${phone}</p>
+                    <a href="tel:${phone}" class="call-btn">📲 Qoʻngʻiroq qilish</a>
+                </div>
+            `;
+
+            document.getElementById('taxi-feed').insertAdjacentHTML('afterbegin', newTaxi);
+
+            document.getElementById('taxi-route').value = "";
+            document.getElementById('taxi-phone').value = "";
+
+            alert("Taksi e'loni qoʻshildi!");
+        }
+    </script>
+
+</body>
+</html>
